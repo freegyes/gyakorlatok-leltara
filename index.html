@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="hu">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Gyakorlatok Leltára | Kereső</title>
+      <meta name="description" content="Láthatatlan Egyetem Gyakorlatok Leltára">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link rel="stylesheet" href="css/bootstrap.min.css">
+
+      <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+      <link rel="stylesheet" href="css/jasny-bootstrap.min.css">
+    
+      <link rel="stylesheet" href="css/main.css">
+
+      <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+      <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+      <script src="js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+  </head>
+  <body>
+      <!--[if lt IE 7]>
+          <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+      <![endif]-->
+  
+  <!-- off canvas menu -->
+  <div id="slide-in" class="navmenu navmenu-default navmenu-fixed-right offcanvas">
+    <a class="navmenu-brand" href="#">Tartalomjegyzék</a>
+    <ul id="toc" class="nav navmenu-nav">
+      <!-- here comes the toc -->
+    </ul>
+  </div>
+
+  <!-- off canvas menu button -->
+  <div class="navbar navbar-default navbar-fixed-top">
+    <button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <button id="feedback" class="navbar-toggle-btn btn btn-link pull-right hidden-xs" title="Adj visszajelzést!"><i class="fa fa-bullhorn fa-flip-horizontal"></i>
+    </button>
+  </div>
+
+  
+  <div class="container">
+
+    <!-- page header and counters -->
+    <div class="row">
+      <div class="page-header col-md-12">
+        <div class="pull-right">
+          <p style="text-align: right;">összesen: <span id="counter-all" class="label label-default" title="az összes gyakorlat száma"></span></p>
+          <p style="text-align: right;">szűrővel: <span id="counter-filtered" class="label label-primary" title="a kiszűrt gyakorlatok száma"></span></p>
+        </div>
+        <h1><small>Gyakorlatok leltára</small></h1>
+      </div>
+    </div>
+
+    <!-- search & filter section -->
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div id="search-field">
+              <form action=""  method="post">
+                <div class="form-group has-feedback">
+                    <label class="control-label" for="search">Keress vagy szűrj az oldalon</label>
+                    <input type="text" class="text-input form-control hasclear" id="live-search" value="" placeholder="Csak kezdd el írni..." autocomplete="off"/>
+                    </div>
+              </form>
+            </div>
+            <div class="btn-group live-filters hidden-xs">
+              <button type="button" class="btn btn-default btn-sm filter" onClick="$('#live-search').val('')" data-filter="all">összes</button>
+              <!-- show the filters here -->
+            </div>
+
+            <!-- stack filter buttons vertically on small devices -->
+            <div class="btn-group-vertical live-filters visible-xs">
+              <button type="button" class="btn btn-default btn-sm filter" onClick="$('#live-search').val('')" data-filter="all">összes</button>
+              <!-- show the filters here -->
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+
+    <!-- the main section -->
+    <div id="mixer-container" class="row container">
+      <!-- show the content here -->
+      <!-- show the alert when the list is empty -->
+      <div id="empty-list" class="alert alert-warning col-md-12" style="display: none;" role="alert">
+        <strong>Nincs találat.</strong><br />
+        Próbálj meg kevesebb feltételt megadni.
+      </div>
+    </div>
+
+    <!-- back to top chevron -->
+    <span id="top-link-block" class="hidden">
+        <a href="#top" class="well well-sm"  onclick="$('html,body').animate({scrollTop:0},'slow');return false;">
+            <i class="glyphicon glyphicon-chevron-up"></i>
+        </a>
+    </span>
+
+  </div>
+
+  <footer class="bs-footer" role="contentinfo">
+    <div class="container">
+      <p class="text-muted"> &copy; <a href="http://lathatatlanegyetem.hu" target="_blank">Láthatatlan Egyetem</a> | Made with <span class="glyphicon glyphicon-heart text-danger"></span> by <a href="http://hu.linkedin.com/pub/%C3%A1d%C3%A1m-freisinger/44/9b9/615/" target="_blank">Ádám</a>.</p>
+    </div>
+  </footer>
+
+    <!-- scripts -->
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery.mixitup.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jasny-bootstrap.min.js"></script>
+    <script src="js/marked.min.js"></script>
+    <script src="js/tabletop.js"></script>
+
+    <!-- Google Analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-46399157-4', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+
+  </body>
+</html>
+
+<!-- custom scripts -->
+<script type="text/javascript">
+  window.onload = function() { init() };
+
+  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/19Go9tWFzIxt90oUd8awFiUPXxD5htlG2C_2xdr_ksMU/pubhtml';
+  
+  var categoryGlobal = []; 
+  var mixerContainer = $('#mixer-container');
+  var liveFilters = $('.live-filters');
+
+  function init() {
+    Tabletop.init( { key: public_spreadsheet_url,
+                     callback: showInfo,
+                     simpleSheet: true } )
+  }
+
+  function showInfo(data, tabletop) {
+
+    // sort data alphabetically by title
+    data.sort(function(a, b){
+     var titleA=a.title.toLowerCase(), titleB=b.title.toLowerCase()
+     if (titleA < titleB) // sort string ascending
+      return -1 
+     if (titleA > titleB)
+      return 1
+     return 0 // default return value (no sorting)
+    })
+
+
+    for (var i = 0; i < data.length; i++) {
+
+        // assign a unique id
+        data[i].id = i;
+
+        // split items
+        var items = data[i].item.split(',');
+        var itemsLabels = "";
+
+        // split types
+        var types = data[i].type.split(',');
+        var typesLabels = "";
+
+        // check if comment exists and build comment section
+        var comment = "";
+        if (data[i].comment) {
+          comment = "<p><i>Megjegyzés: " + data[i].comment + "</i></p>";
+        }
+
+        //convert newlines to linebreaks
+        // data[i].description = data[i].description.replace(/(?:\r\n|\r|\n)/g, '</p><p>');
+
+        //convert from markdown
+        data[i].description = marked(data[i].description);
+        
+
+        // build items list
+        for (var j = 0; j < items.length; j++) {
+          // check if items list is empty
+          if (items[0] == "-") {
+            break
+          } else {
+            itemsLabels = itemsLabels + "<span class=\"label label-warning data-items\">" + items[j] + "</span>&nbsp;";
+          }
+        }
+
+        for (var k = 0; k < types.length; k++) {
+          typesLabels = typesLabels + "<span class=\"label label-success data-types\">" + types[k] + "</span>&nbsp;";
+        }
+
+        // build category list for each unit
+        var categoryList = data[i].type.split(', ');
+
+        for (var j = 0; j < categoryList.length; j++) {
+          categoryList[j] = categoryList[j].replace(/\s+/g, "-");
+          categoryGlobal.push(categoryList[j]);
+          categoryList[j] = " category-" + categoryList[j] + " ";
+        }
+        
+        categoryList = categoryList.join("");
+
+        //build a panel
+        var panel = "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h3 class=\"panel-title\">létszám, idő, eszközök, cél</h3></div><div class=\"panel-body\"><p><span class=\"label label-primary data-people\">" + data[i].people + " embernek</span>&nbsp;<span class=\"label label-primary data-time\">" + data[i].time + " </span></p><p>" + typesLabels + "</p><p>" + itemsLabels + "</p></div></div>";
+
+        //display content on page
+        mixerContainer.append("<div id=\"" + data[i].id + "\" class=\"mix" + categoryList + "col-xs-12 col-sm-12 col-md-12 col-lg-12 well well-sm search-unit\" style=\"display: inline-block;\"><h2>" + data[i].title + "</h2><div class=\"col-lg-4 col-md-12 col-sm-12 col-xs-12 pull-right\">" + panel + "</div><div class=\"col-lg-8 col-md-12 col-sm-12 col-xs-12\"><h3>A gyakorlat menete</h3><p>" + data[i].description + "</p>" + comment + "</div></div>");        
+      }
+
+      // make category list unique
+      var categoryUnique = [];
+      $.each(categoryGlobal, function(i, el){
+          if($.inArray(el, categoryUnique) === -1) categoryUnique.push(el);
+      });
+      categoryUnique.sort();
+      var categoryUniqueSpaceSeparated = [];
+
+      // show live filters
+      for (var k = 0; k < categoryUnique.length; k++) {
+        categoryUniqueSpaceSeparated[k] = categoryUnique[k].replace(/-/g, ' ');
+        liveFilters.append("<button type=\"button\" class=\"btn btn-default btn-sm filter\" onClick=\"$('#live-search').val('')\" data-filter=\".category-" + categoryUnique[k] + "\">" + categoryUniqueSpaceSeparated[k] + "</button>");  
+      };
+
+      //hide canvas on click
+      $('#slide-in').click(function(){
+        $('.navmenu').offcanvas('hide');
+      });
+
+      //show back to top on long pages
+      if ( ($(window).height() + 100) < $(document).height() ) {
+          $('#top-link-block').removeClass('hidden').affix({
+              // how far to scroll down before link "slides" into view
+              offset: {top:100}
+          });
+      }
+
+      //initiate mixItUp
+      $('#mixer-container').mixItUp({
+        callbacks: {
+          onMixEnd: function(state){
+            // update filtered / all counter
+            $('#counter-all').html(state.totalTargets);
+            $('#counter-filtered').html(state.totalShow);
+            
+            if (state.totalShow == 0) {
+              $("#empty-list").fadeIn();
+            } else {
+              $("#empty-list").fadeOut();
+            };
+
+            var tocID = [];
+            var tocTitle = [];
+
+            for (var m = 0; m < state.$show.length; m++) {
+              tocTitle[m] = ($(state.$show[m]).find('h2').text());
+              tocID[m] = ($(state.$show[m]).attr('id')); 
+            };
+
+            // update the TOC
+            $("#toc").empty();
+            for (var n = 0; n < tocID.length; n++) {
+              $("#toc").append("<li><a href=\"#" + tocID[n] + "\">" + tocTitle[n] + "</a></li>");
+            };
+             
+          } 
+        }
+      });
+
+      // build live search functionality
+      var inputText;
+      var $matching = $();
+
+        // Delay function
+        var delay = (function(){
+          var timer = 0;
+          return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+          };
+        })();
+
+        $("#live-search").keyup(function(){
+          // Delay function invoked to make sure user stopped typing
+          delay(function(){
+            inputText = $("#live-search").val().toLowerCase();
+            
+            // Check to see if input field is empty
+            if ((inputText.length) > 0) {            
+              $( '.mix').each(function() {
+                $this = $("this");
+                
+                 // add item to be filtered out if input text matches items inside the title 
+                 if($(this).contents().text().toLowerCase().match(inputText)) {
+                  $matching = $matching.add(this);
+                }
+                else {
+                  // removes any previously matched item
+                  $matching = $matching.not(this);
+                }
+              });
+              $("#mixer-container").mixItUp('filter', $matching);
+            }
+
+            else {
+              // resets the filter to show all item if input is empty
+              $("#mixer-container").mixItUp('filter', 'all');
+            }
+          }, 200 );
+        });
+    
+    // initiate popover
+    $('#feedback').popover({
+      html: true,
+      content: '<p>Adj visszajelzést valamelyik gyakorlathoz: <a href=\"https://docs.google.com/spreadsheets/d/1R7YZZJhZAQBln7QEtidESXhGme0MEe2_c0hpDZ1pSWs/edit?usp=sharing\" target=\"_blank\">ide kattintva</a>.</p><p>Küldj be egy új gyakorlatot: <a href=\"http://goo.gl/forms/UPQxnSsRv4\" target=\"_blank\">ide kattintva</a>.</p>',
+      placement: 'auto',
+      trigger: 'focus'
+    });
+
+    };
+</script>
+
