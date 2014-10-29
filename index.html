@@ -294,7 +294,18 @@
           }
         }
 
-        peopleLabels = createLabel(data[i].people, 'primary');
+        // build people labels
+        if (data[i].peoplemin && data[i].peoplemax) {
+            peopleLabels = createLabel(data[i].peoplemin + ' - ' + data[i].peoplemax + ' emberre', 'primary');
+        } else if (data[i].peoplemin) {
+            peopleLabels = createLabel('legalább ' + data[i].peoplemin + ' emberre', 'primary');
+        } else if (data[i].peoplemax) {
+            peopleLabels = createLabel('legfeljebb ' + data[i].peoplemax + ' emberre', 'primary');
+        } else {
+            peopleLabels = createLabel('létszámfüggetlen', 'primary');
+        }
+
+        // build time labels
         timeLabels = createLabel(data[i].time, 'primary');
 
         //build a panel
@@ -312,7 +323,6 @@
           if($.inArray(el, categoryUnique) === -1) {
             categoryUnique.push(el);
             categoryUniqueDict.push({'name': el, 'class': 'category-' + el.replace(/\s+/g, "-")});
-            console.log(categoryUniqueDict)
           }
       });
       categoryUniqueDict.sort(function(a,b) {return a.name.localeCompare(b.name)});
