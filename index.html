@@ -201,6 +201,13 @@
     return "<span class=\"label label-" + labelType + " data-items\">" + cleanStr(str) + "</span>&nbsp;";
   }
 
+  // check if a string is empty, else wrap in strings
+  function htmlWrap(str, pre, post) {
+    if (str) {
+      str = pre + str + post;
+    }
+  }
+
   function mixitUp() {
     //initiate mixItUp
     $('#mixer-container').mixItUp({
@@ -261,14 +268,35 @@
         // assign a unique id
         data[i].id = i;
 
+        //convert from markdown
+        data[i].when = marked(data[i].when);
+        data[i].description = marked(data[i].description);
+        data[i].alternative = marked(data[i].alternative);
+        
         // check if comment exists and build comment section
         var comment = "";
         if (data[i].comment) {
-          comment = "<p><i>Megjegyzés: " + data[i].comment + "</i></p>";
+          comment = "<p><i><strong>Megjegyzés:</strong> " + data[i].comment + "</i></p>";
         }
 
-        //convert from markdown
-        data[i].description = marked(data[i].description);
+        // check if when exists and build when section
+        var when = "";
+        if (data[i].when) {
+          when = "<h4>Mikor</h4><p>" + data[i].when + "</p>";
+        }
+
+        // check if description exists and build description section
+        var description = "";
+        if (data[i].description) {
+          description = "<h4>A gyakorlat menete</h4><p>" + data[i].description + "</p>";
+        }
+
+        // check if alternative exists and build alternative section
+        var alternative = "";
+        if (data[i].alternative) {
+          alternative = "<h4>Alternatívák</h4><p>" + data[i].alternative + "</p>";
+        }
+
         
         // split items
         var items = data[i].item.split(',');
@@ -312,7 +340,7 @@
         var panel = "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h3 class=\"panel-title\">létszám, idő, eszközök, cél</h3></div><div class=\"panel-body\"><p>" + peopleLabels + timeLabels + "</p><p>" + typesLabels + "</p><p>" + itemsLabels + "</p></div></div>";
 
         //display content on page
-        $('#mixer-container').append("<div id=\"" + data[i].id + "\" class=\"mix " + typesClasses + "col-xs-12 col-sm-12 col-md-12 col-lg-12 well well-sm search-unit\" style=\"display: inline-block;\"><h2>" + data[i].title + "</h2><div class=\"col-lg-4 col-md-12 col-sm-12 col-xs-12 pull-right\">" + panel + "</div><div class=\"col-lg-8 col-md-12 col-sm-12 col-xs-12\"><h3>A gyakorlat menete</h3><p>" + data[i].description + "</p>" + comment + "</div></div>");        
+        $('#mixer-container').append("<div id=\"" + data[i].id + "\" class=\"mix " + typesClasses + "col-xs-12 col-sm-12 col-md-12 col-lg-12 well well-sm search-unit\" style=\"display: inline-block;\"><h2>" + data[i].title + "</h2><div class=\"col-lg-4 col-md-12 col-sm-12 col-xs-12 pull-right\">" + panel + "</div><div class=\"col-lg-8 col-md-12 col-sm-12 col-xs-12\">" + when + description + alternative + comment + "</div></div>");        
       }
 
       // make category list unique
