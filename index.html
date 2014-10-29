@@ -145,105 +145,90 @@
 
 <!-- custom scripts -->
 <script type="text/javascript">
-  window.onload = function() { init() };
-
-  var public_spreadsheet_url = 'https://docs.google.com/spreadsheets/d/19Go9tWFzIxt90oUd8awFiUPXxD5htlG2C_2xdr_ksMU/pubhtml';
-  
-  var categoryGlobal = []; 
-  var mixerContainer = $('#mixer-container');
-  var liveFilters = $('.live-filters');
-
-  function init() {
-    Tabletop.init( { key: public_spreadsheet_url,
+  window.onload = function() { 
+      Tabletop.init( { key: 'https://docs.google.com/spreadsheets/d/19Go9tWFzIxt90oUd8awFiUPXxD5htlG2C_2xdr_ksMU/pubhtml',
                      callback: showInfo,
                      simpleSheet: true } )
+      liveSearch();
+   }
+
+  function liveSearch() {
+    // Delay function
+    var delay = (function(){
+      var timer = 0;
+      return function(callback, ms){
+        clearTimeout(timer);
+        timer = setTimeout(callback, ms);
+      };
+    })();
+
+    // build live search functionality
+    $("#live-search").keyup(function(){
+      var inputText;
+      var $matching = $();
+      // Delay function invoked to make sure user stopped typing
+      delay(function() {
+        inputText = $("#live-search").val().toLowerCase().trim();
+        
+        // Check to see if input field is empty
+        if ((inputText.length) > 0) {            
+          $('.mix').each(function() {
+            $this = $("this");
+            // add item to be filtered out if input text matches items inside the title 
+            if($(this).contents().text().toLowerCase().match(inputText)) {
+              $matching = $matching.add(this);
+            } else {
+              // removes any previously matched item
+              $matching = $matching.not(this);
+            }
+          });
+          $("#mixer-container").mixItUp('filter', $matching);
+        }
+        else {
+          // resets the filter to show all item if input is empty
+          $("#mixer-container").mixItUp('filter', 'all');
+        }
+      }, 200);
+    });
+  };
+
+  function cleanStr(str) {
+    //return str.replace(/\s+/g, "").replace(/\n+/g, "").replace(/\r+/g, "").toLowerCase();
+    return str.trim().toLowerCase();
   }
 
-  function showInfo(data, tabletop) {
+  function createLabel(str, labelType) {
+    return "<span class=\"label label-" + labelType + " data-items\">" + cleanStr(str) + "</span>&nbsp;";
+  }
 
-    // sort data alphabetically by title
-    data.sort(function(a, b){
-     var titleA=a.title.toLowerCase(), titleB=b.title.toLowerCase()
-     if (titleA < titleB) // sort string ascending
-      return -1 
-     if (titleA > titleB)
-      return 1
-     return 0 // default return value (no sorting)
-    })
+  function mixitUp() {
+    //initiate mixItUp
+    $('#mixer-container').mixItUp({
+      callbacks: {
+        onMixEnd: function(state){
+          // update filtered / all counter
+          $('#counter-all').html(state.totalTargets);
+          $('#counter-filtered').html(state.totalShow);
+          
+          if (state.totalShow == 0) { $("#empty-list").fadeIn(); } 
+          else { $("#empty-list").fadeOut(); };
 
+          var toc = [];
+          for (var m = 0; m < state.$show.length; m++) {
+            toc.push({'title': ($(state.$show[m]).find('h2').text()),'id': ($(state.$show[m]).attr('id'))});
+          };
 
-    for (var i = 0; i < data.length; i++) {
-
-        // assign a unique id
-        data[i].id = i;
-
-        // split items
-        var items = data[i].item.split(',');
-        var itemsLabels = "";
-
-        // split types
-        var types = data[i].type.split(',');
-        var typesLabels = "";
-
-        // check if comment exists and build comment section
-        var comment = "";
-        if (data[i].comment) {
-          comment = "<p><i>Megjegyzés: " + data[i].comment + "</i></p>";
-        }
-
-        //convert newlines to linebreaks
-        // data[i].description = data[i].description.replace(/(?:\r\n|\r|\n)/g, '</p><p>');
-
-        //convert from markdown
-        data[i].description = marked(data[i].description);
-        
-
-        // build items list
-        for (var j = 0; j < items.length; j++) {
-          // check if items list is empty
-          if (items[0] == "-") {
-            break
-          } else {
-            itemsLabels = itemsLabels + "<span class=\"label label-warning data-items\">" + items[j] + "</span>&nbsp;";
-          }
-        }
-
-        for (var k = 0; k < types.length; k++) {
-          typesLabels = typesLabels + "<span class=\"label label-success data-types\">" + types[k] + "</span>&nbsp;";
-        }
-
-        // build category list for each unit
-        var categoryList = data[i].type.split(', ');
-
-        for (var j = 0; j < categoryList.length; j++) {
-          categoryList[j] = categoryList[j].replace(/\s+/g, "-");
-          categoryGlobal.push(categoryList[j]);
-          categoryList[j] = " category-" + categoryList[j] + " ";
-        }
-        
-        categoryList = categoryList.join("");
-
-        //build a panel
-        var panel = "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h3 class=\"panel-title\">létszám, idő, eszközök, cél</h3></div><div class=\"panel-body\"><p><span class=\"label label-primary data-people\">" + data[i].people + " embernek</span>&nbsp;<span class=\"label label-primary data-time\">" + data[i].time + " </span></p><p>" + typesLabels + "</p><p>" + itemsLabels + "</p></div></div>";
-
-        //display content on page
-        mixerContainer.append("<div id=\"" + data[i].id + "\" class=\"mix" + categoryList + "col-xs-12 col-sm-12 col-md-12 col-lg-12 well well-sm search-unit\" style=\"display: inline-block;\"><h2>" + data[i].title + "</h2><div class=\"col-lg-4 col-md-12 col-sm-12 col-xs-12 pull-right\">" + panel + "</div><div class=\"col-lg-8 col-md-12 col-sm-12 col-xs-12\"><h3>A gyakorlat menete</h3><p>" + data[i].description + "</p>" + comment + "</div></div>");        
+          // update the TOC
+          $("#toc").empty();
+          for (var n = 0; n < toc.length; n++) {
+            $("#toc").append("<li><a href=\"#" + toc[n].id + "\">" + toc[n].title + "</a></li>");
+          };
+        } 
       }
+    });
+  }
 
-      // make category list unique
-      var categoryUnique = [];
-      $.each(categoryGlobal, function(i, el){
-          if($.inArray(el, categoryUnique) === -1) categoryUnique.push(el);
-      });
-      categoryUnique.sort();
-      var categoryUniqueSpaceSeparated = [];
-
-      // show live filters
-      for (var k = 0; k < categoryUnique.length; k++) {
-        categoryUniqueSpaceSeparated[k] = categoryUnique[k].replace(/-/g, ' ');
-        liveFilters.append("<button type=\"button\" class=\"btn btn-default btn-sm filter\" onClick=\"$('#live-search').val('')\" data-filter=\".category-" + categoryUnique[k] + "\">" + categoryUniqueSpaceSeparated[k] + "</button>");  
-      };
-
+  function domHandler() {
       //hide canvas on click
       $('#slide-in').click(function(){
         $('.navmenu').offcanvas('hide');
@@ -257,88 +242,89 @@
           });
       }
 
-      //initiate mixItUp
-      $('#mixer-container').mixItUp({
-        callbacks: {
-          onMixEnd: function(state){
-            // update filtered / all counter
-            $('#counter-all').html(state.totalTargets);
-            $('#counter-filtered').html(state.totalShow);
-            
-            if (state.totalShow == 0) {
-              $("#empty-list").fadeIn();
-            } else {
-              $("#empty-list").fadeOut();
-            };
-
-            var tocID = [];
-            var tocTitle = [];
-
-            for (var m = 0; m < state.$show.length; m++) {
-              tocTitle[m] = ($(state.$show[m]).find('h2').text());
-              tocID[m] = ($(state.$show[m]).attr('id')); 
-            };
-
-            // update the TOC
-            $("#toc").empty();
-            for (var n = 0; n < tocID.length; n++) {
-              $("#toc").append("<li><a href=\"#" + tocID[n] + "\">" + tocTitle[n] + "</a></li>");
-            };
-             
-          } 
-        }
+      // initiate popover
+      $('#feedback').popover({
+        html: true,
+        content: '<p>Adj visszajelzést valamelyik gyakorlathoz: <a href=\"https://docs.google.com/spreadsheets/d/1R7YZZJhZAQBln7QEtidESXhGme0MEe2_c0hpDZ1pSWs/edit?usp=sharing\" target=\"_blank\">ide kattintva</a>.</p><p>Küldj be egy új gyakorlatot: <a href=\"http://goo.gl/forms/UPQxnSsRv4\" target=\"_blank\">ide kattintva</a>.</p>',
+        placement: 'auto',
+        trigger: 'focus'
       });
+  }
 
-      // build live search functionality
-      var inputText;
-      var $matching = $();
+  function showInfo(data, tabletop) {
+    var categoryGlobal = []; 
+    // sort data alphabetically by title
+    data.sort(function(a,b) {return a.title.toLowerCase().localeCompare(b.title)});
 
-        // Delay function
-        var delay = (function(){
-          var timer = 0;
-          return function(callback, ms){
-            clearTimeout (timer);
-            timer = setTimeout(callback, ms);
-          };
-        })();
+    for (var i = 0; i < data.length; i++) {
 
-        $("#live-search").keyup(function(){
-          // Delay function invoked to make sure user stopped typing
-          delay(function(){
-            inputText = $("#live-search").val().toLowerCase();
-            
-            // Check to see if input field is empty
-            if ((inputText.length) > 0) {            
-              $( '.mix').each(function() {
-                $this = $("this");
-                
-                 // add item to be filtered out if input text matches items inside the title 
-                 if($(this).contents().text().toLowerCase().match(inputText)) {
-                  $matching = $matching.add(this);
-                }
-                else {
-                  // removes any previously matched item
-                  $matching = $matching.not(this);
-                }
-              });
-              $("#mixer-container").mixItUp('filter', $matching);
-            }
+        // assign a unique id
+        data[i].id = i;
 
-            else {
-              // resets the filter to show all item if input is empty
-              $("#mixer-container").mixItUp('filter', 'all');
-            }
-          }, 200 );
-        });
-    
-    // initiate popover
-    $('#feedback').popover({
-      html: true,
-      content: '<p>Adj visszajelzést valamelyik gyakorlathoz: <a href=\"https://docs.google.com/spreadsheets/d/1R7YZZJhZAQBln7QEtidESXhGme0MEe2_c0hpDZ1pSWs/edit?usp=sharing\" target=\"_blank\">ide kattintva</a>.</p><p>Küldj be egy új gyakorlatot: <a href=\"http://goo.gl/forms/UPQxnSsRv4\" target=\"_blank\">ide kattintva</a>.</p>',
-      placement: 'auto',
-      trigger: 'focus'
-    });
+        // check if comment exists and build comment section
+        var comment = "";
+        if (data[i].comment) {
+          comment = "<p><i>Megjegyzés: " + data[i].comment + "</i></p>";
+        }
 
-    };
+        //convert from markdown
+        data[i].description = marked(data[i].description);
+        
+        // split items
+        var items = data[i].item.split(',');
+        var itemsLabels = "";
+        // build items list
+        for (var j = 0; j < items.length; j++) {
+          if (cleanStr(items[j]) != "") {
+            itemsLabels += createLabel(items[j], 'warning');
+          }
+        }
+
+        // split types
+        var types = data[i].type.split(',');
+        var typesLabels = "";
+        var typesClasses = "";
+        // build types list
+        for (var j = 0; j < types.length; j++) {
+          var cleaned = cleanStr(types[j]);
+          if (cleaned != "") {
+            typesLabels += createLabel(types[j], 'success');
+            typesClasses += 'category-' + cleaned.replace(/\s+/g, "-") + ' ';
+            categoryGlobal.push(cleaned);
+          }
+        }
+
+        peopleLabels = createLabel(data[i].people, 'primary');
+        timeLabels = createLabel(data[i].time, 'primary');
+
+        //build a panel
+        var panel = "<div class=\"panel panel-default\"><div class=\"panel-heading\"><h3 class=\"panel-title\">létszám, idő, eszközök, cél</h3></div><div class=\"panel-body\"><p>" + peopleLabels + timeLabels + "</p><p>" + typesLabels + "</p><p>" + itemsLabels + "</p></div></div>";
+
+        //display content on page
+        $('#mixer-container').append("<div id=\"" + data[i].id + "\" class=\"mix " + typesClasses + "col-xs-12 col-sm-12 col-md-12 col-lg-12 well well-sm search-unit\" style=\"display: inline-block;\"><h2>" + data[i].title + "</h2><div class=\"col-lg-4 col-md-12 col-sm-12 col-xs-12 pull-right\">" + panel + "</div><div class=\"col-lg-8 col-md-12 col-sm-12 col-xs-12\"><h3>A gyakorlat menete</h3><p>" + data[i].description + "</p>" + comment + "</div></div>");        
+      }
+
+      // make category list unique
+      
+      var categoryUnique = [];
+      var categoryUniqueDict = [];
+      $.each(categoryGlobal, function(i, el){
+          if($.inArray(el, categoryUnique) === -1) {
+            categoryUnique.push(el);
+            categoryUniqueDict.push({'name': el, 'class': 'category-' + el.replace(/\s+/g, "-")});
+            console.log(categoryUniqueDict)
+          }
+      });
+      categoryUniqueDict.sort(function(a,b) {return a.name.localeCompare(b.name)});
+
+      // show live filters
+      for (var k = 0; k < categoryUniqueDict.length; k++) {
+         $('.live-filters').append("<button type=\"button\" class=\"btn btn-default btn-sm filter\" onClick=\"$('#live-search').val('')\" data-filter=\"." + categoryUniqueDict[k].class + "\">" + categoryUniqueDict[k].name + "</button>");  
+      };
+
+      mixitUp();
+      domHandler();
+
+    } // showInfo
 </script>
 
