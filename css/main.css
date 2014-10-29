@@ -61,3 +61,8 @@ body {
     bottom: 18px; /* height of link element */
     left: 10px; /* padding from the left side of the window */
 }
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
