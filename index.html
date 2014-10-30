@@ -115,7 +115,7 @@
   <footer class="bs-footer" role="contentinfo">
     <div class="row">
         <div class="col-md-6 col-centered text-center">
-          <p class="text-muted"> &copy; <a href="http://lathatatlanegyetem.hu" target="_blank">Láthatatlan Egyetem</a> | Made with <span class="glyphicon glyphicon-heart text-danger"></span> by <a href="http://hu.linkedin.com/pub/%C3%A1d%C3%A1m-freisinger/44/9b9/615/" target="_blank">Ádám</a>.</p>
+          <p class="text-muted"> &copy; <a href="http://lathatatlanegyetem.hu" target="_blank">Láthatatlan Egyetem</a> | Made with <span class="glyphicon glyphicon-heart text-danger"></span> by <a href="https://github.com/freegyes" target="_blank">Ádám</a> &amp; <a href="https://github.com/borzos6" target="_blank">László</a>.</p>
         </div>
     </div>
   </footer>
@@ -126,6 +126,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/jasny-bootstrap.min.js"></script>
     <script src="js/marked.min.js"></script>
+    <!-- <script src="js/readmore.min.js"></script> -->
     <script src="js/tabletop.js"></script>
 
     <!-- Google Analytics -->
@@ -201,13 +202,6 @@
     return "<span class=\"label label-" + labelType + " data-items\">" + cleanStr(str) + "</span>&nbsp;";
   }
 
-  // check if a string is empty, else wrap in strings
-  function htmlWrap(str, pre, post) {
-    if (str) {
-      str = pre + str + post;
-    }
-  }
-
   function mixitUp() {
     //initiate mixItUp
     $('#mixer-container').mixItUp({
@@ -248,6 +242,14 @@
               offset: {top:100}
           });
       }
+
+      // // shorten long divs
+      // $('.mix').readmore({
+      //   maxHeight: 280,
+      //   moreLink: '<a href="#">Tovább</a>',
+      //   lessLink: '<a href="#">Bezár</a>',
+      //   sectionCSS: {sectionCSS: 'display: inline-block; width: 100%;'}
+      // });
 
       // initiate popover
       $('#feedback').popover({
