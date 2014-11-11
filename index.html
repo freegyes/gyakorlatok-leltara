@@ -70,24 +70,21 @@
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div class="panel panel-default">
           <div class="panel-body">
-            <div id="search-field">
-              <form action=""  method="post">
-                <div class="form-group has-feedback">
-                    <label class="control-label" for="search">Keress vagy szűrj az oldalon</label>
-                    <input type="text" class="text-input form-control hasclear" id="live-search" value="" placeholder="Csak kezdd el írni..." autocomplete="off"/>
-                    </div>
-              </form>
+            <form action=""  method="post">
+              <div id="search-field">
+                <div class="form-group">
+                  <label class="control-label" for="search">Keress bármire...</label>
+                  <input type="text" class="text-input form-control hasclear" id="live-search" value="" placeholder="Csak kezdd el írni..." autocomplete="off"/>
+                </div>
+              </div>
+            <div class="form-group">
+              <label class="control-label" for="filter">vagy szűrj kategóriák szerint.</label>
+              <select id="filter-select" class="form-control" onClick="$('#live-search').val('')">
+                <option value="all">összes</option>
+                <!-- show the options here -->
+              </select>
             </div>
-            <div class="btn-group live-filters hidden-xs">
-              <button type="button" class="btn btn-default btn-sm filter" onClick="$('#live-search').val('')" data-filter="all">összes</button>
-              <!-- show the filters here -->
-            </div>
-
-            <!-- stack filter buttons vertically on small devices -->
-            <div class="btn-group-vertical live-filters visible-xs">
-              <button type="button" class="btn btn-default btn-sm filter" onClick="$('#live-search').val('')" data-filter="all">összes</button>
-              <!-- show the filters here -->
-            </div>
+            </form>
           </div>
         </div>  
       </div>
@@ -170,6 +167,7 @@
       // Delay function invoked to make sure user stopped typing
       delay(function() {
         inputText = $("#live-search").val().toLowerCase().trim();
+        $('#filter-select').val("all");
         
         // Check to see if input field is empty
         if ((inputText.length) > 0) {            
@@ -199,7 +197,7 @@
   }
 
   function createLabel(str, labelType) {
-    return "<span class=\"label label-" + labelType + " data-items\">" + cleanStr(str) + "</span>&nbsp;";
+    return "<span class=\"label label-tag label-" + labelType + " data-items\">" + cleanStr(str) + "</span>&nbsp;";
   }
 
   function mixitUp() {
@@ -242,6 +240,18 @@
               offset: {top:100}
           });
       }
+
+      $(function(){
+        var $filterSelect = $('#filter-select'),
+            $container = $('#mixer-container');
+        
+        $container.mixItUp();
+        
+        $filterSelect.on('change', function(){
+          $container.mixItUp('filter', this.value);
+        });
+        
+      });
 
       // // shorten long divs
       // $('.mix').readmore({
@@ -359,7 +369,7 @@
 
       // show live filters
       for (var k = 0; k < categoryUniqueDict.length; k++) {
-         $('.live-filters').append("<button type=\"button\" class=\"btn btn-default btn-sm filter\" onClick=\"$('#live-search').val('')\" data-filter=\"." + categoryUniqueDict[k].class + "\">" + categoryUniqueDict[k].name + "</button>");  
+         $('#filter-select').append("<option value=\"." + categoryUniqueDict[k].class + "\">" + categoryUniqueDict[k].name + "</option>");
       };
 
       mixitUp();
